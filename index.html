@@ -194,10 +194,6 @@
 
 }
 ```
-@media (max-width: 900px) {
-    #chart {
-        margin-left: -15px;
-        width: calc(100% + 15px);
 
     </style>
 
@@ -657,25 +653,25 @@ function updateChart() {
 
 
                 chart: {
+    type:
+        "column",
+    animation:
+        false,
 
-                    type:
-                        "column",
+    spacingTop:
+        20,
 
-                    animation:
-                        false,
+    spacingBottom:
+        20,
 
-                    spacingTop:
-                        20,
+    spacingLeft:
+        10,
 
-                    spacingBottom:
-                        20,
+    spacingRight:
+        10,
 
-                    spacingLeft:
-                        10,
-
-                    spacingRight:
-                        10
-
+    marginLeft:
+        window.innerWidth <= 700 ? 55 : undefined
                 },
 
 
