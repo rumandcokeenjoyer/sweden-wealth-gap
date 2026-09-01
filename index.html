@@ -14,53 +14,90 @@
     <!-- Highcharts -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
+
     <style>
 
         body {
+
             font-family: Arial, sans-serif;
-            max-width: 1100px;
+
+            max-width: 1200px;
+
             margin: 40px auto;
+
             padding: 0 20px;
+
             color: #222;
+
         }
+
 
         h1 {
-            font-size: 30px;
+
+            font-size: 32px;
+
             margin-bottom: 10px;
+
         }
+
 
         .description {
-            font-size: 16px;
+
+            font-size: 17px;
+
             line-height: 1.6;
-            max-width: 850px;
+
+            max-width: 900px;
+
             margin-bottom: 25px;
+
         }
 
-        #chart {
-            width: 100%;
-            height: 650px;
-        }
 
         .toggle {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
+
+            margin: 20px 0;
+
+            font-size: 17px;
+
         }
+
 
         .toggle label {
+
             cursor: pointer;
+
         }
+
 
         input[type="checkbox"] {
+
             transform: scale(1.3);
-            margin-right: 8px;
+
+            margin-right: 10px;
+
         }
 
+
+        #chart {
+
+            width: 100%;
+
+            height: 650px;
+
+        }
+
+
         .source {
+
             font-size: 13px;
+
             color: #666;
+
             line-height: 1.5;
+
             margin-top: 20px;
+
         }
 
     </style>
@@ -71,24 +108,25 @@
 <body>
 
 
-<h1>Sweden's Wealth Distribution: Off the Charts</h1>
+<h1>Sweden's Wealth Distribution</h1>
 
 
 <div class="description">
 
-    This visualization shows estimated net wealth thresholds
-    across the Swedish wealth distribution.
+    This visualization shows the estimated net wealth
+    associated with different points in the Swedish
+    wealth distribution.
 
-    Each point represents the level of net wealth required
-    to reach a particular percentile.
-
-    Use the option below to include or exclude the estimated
-    wealth threshold of Sweden's 50 wealthiest people.
+    The height of each pillar represents the net wealth
+    required to reach that percentile.
 
 </div>
 
 
-<!-- TOGGLE -->
+<!-- ======================================================
+     TOP 50 TOGGLE
+     ====================================================== -->
+
 
 <div class="toggle">
 
@@ -100,25 +138,28 @@
             onchange="updateChart()"
         >
 
-        Include Sweden's 50 wealthiest people
+        Include Sweden's 50 wealthiest individuals
 
     </label>
 
 </div>
 
 
-<!-- CHART -->
+<!-- ======================================================
+     GRAPH
+     ====================================================== -->
+
 
 <div id="chart"></div>
 
 
 <div class="source">
 
-    <strong>Note:</strong>
+    <strong>Data note:</strong>
 
-    The wealth figures currently used in this prototype
-    are illustrative and should be replaced with verified
-    Swedish wealth-distribution data.
+    The wealth figures currently used are illustrative
+    placeholders. They should be replaced with verified
+    Swedish wealth-distribution data before publication.
 
 </div>
 
@@ -127,65 +168,83 @@
 <script>
 
 
-// ============================================================
-// SWEDISH WEALTH DISTRIBUTION
-// ============================================================
-//
-// IMPORTANT:
-// These are placeholder values for building the visualization.
-// We will replace them with real Swedish data.
+// ==========================================================
+// WEALTH DATA
+// ==========================================================
 //
 // Format:
+//
 // [percentile, wealth in SEK]
 //
-// ============================================================
+// These values are placeholders.
+// We will replace them with real Swedish data.
+//
+// ==========================================================
 
 
 const wealthData = [
 
-    [1,     -120000],
-    [5,       0],
-    [10,     15000],
-    [20,     80000],
-    [30,    180000],
-    [40,    350000],
-    [50,    600000],
-    [60,    950000],
-    [70,   1400000],
-    [80,   2200000],
-    [90,   3800000],
-    [91,   4100000],
-    [92,   4500000],
-    [93,   4900000],
-    [94,   5500000],
-    [95,   6500000],
-    [96,   7800000],
-    [97,   9500000],
-    [98,  12500000],
-    [99,  18000000]
+    [1,      -120000],
+
+    [5,           0],
+
+    [10,      15000],
+
+    [20,      80000],
+
+    [30,     180000],
+
+    [40,     350000],
+
+    [50,     600000],
+
+    [60,     950000],
+
+    [70,    1400000],
+
+    [80,    2200000],
+
+    [90,    3800000],
+
+    [91,    4100000],
+
+    [92,    4500000],
+
+    [93,    4900000],
+
+    [94,    5500000],
+
+    [95,    6500000],
+
+    [96,    7800000],
+
+    [97,    9500000],
+
+    [98,   12500000],
+
+    [99,   18000000]
 
 ];
 
 
-// ============================================================
+// ==========================================================
 // TOP 50 THRESHOLD
-// ============================================================
+// ==========================================================
 //
-// This is a PLACEHOLDER.
+// PLACEHOLDER ONLY.
 //
-// Once we obtain the real Swedish top-50 data,
-// this should become the net worth of the 50th richest
-// Swedish person/family in the chosen year.
+// This should eventually be the wealth of the
+// 50th wealthiest Swedish individual.
 //
-// ============================================================
+// ==========================================================
 
 
 const top50Threshold = 10000000000;
 
 
-// ============================================================
-// FORMAT SEK
-// ============================================================
+// ==========================================================
+// FORMAT SWEDISH CURRENCY
+// ==========================================================
 
 
 function formatSEK(value) {
@@ -202,9 +261,9 @@ function formatSEK(value) {
 }
 
 
-// ============================================================
-// CREATE / UPDATE CHART
-// ============================================================
+// ==========================================================
+// CREATE CHART
+// ==========================================================
 
 
 let chart;
@@ -213,53 +272,52 @@ let chart;
 function updateChart() {
 
 
-    // --------------------------------------------------------
-    // Check whether Top 50 should be included
-    // --------------------------------------------------------
+    // ------------------------------------------------------
+    // Check whether Top 50 is enabled
+    // ------------------------------------------------------
+
 
     const includeTop50 =
         document.getElementById("top50Toggle").checked;
 
 
-    // --------------------------------------------------------
-    // Start with ordinary wealth distribution
-    // --------------------------------------------------------
+    // ------------------------------------------------------
+    // Create the normal percentile pillars
+    // ------------------------------------------------------
 
-    let seriesData = wealthData.map(function(point) {
 
-        return {
+    let categories = [];
 
-            x: point[0],
+    let values = [];
 
-            y: point[1]
 
-        };
+    wealthData.forEach(function(point) {
+
+        categories.push(point[0] + "%");
+
+        values.push(point[1]);
 
     });
 
 
-    // --------------------------------------------------------
-    // Add Top 50 threshold if selected
-    // --------------------------------------------------------
+    // ------------------------------------------------------
+    // Add Top 50 pillar
+    // ------------------------------------------------------
+
 
     if (includeTop50) {
 
-        seriesData.push({
+        categories.push("Top 50");
 
-            x: 99.999,
-
-            y: top50Threshold,
-
-            isTop50: true
-
-        });
+        values.push(top50Threshold);
 
     }
 
 
-    // --------------------------------------------------------
-    // Destroy old chart
-    // --------------------------------------------------------
+    // ------------------------------------------------------
+    // Destroy existing chart
+    // ------------------------------------------------------
+
 
     if (chart) {
 
@@ -268,18 +326,21 @@ function updateChart() {
     }
 
 
-    // --------------------------------------------------------
-    // Create chart
-    // --------------------------------------------------------
+    // ------------------------------------------------------
+    // Create new chart
+    // ------------------------------------------------------
+
 
     chart = Highcharts.chart("chart", {
 
 
         chart: {
 
-            type: "line",
+            type: "column",
 
-            zoomType: "x"
+            spacingTop: 30,
+
+            spacingBottom: 40
 
         },
 
@@ -288,9 +349,9 @@ function updateChart() {
 
             text: includeTop50
 
-                ? "Swedish wealth distribution including the top 50"
+                ? "Sweden's Wealth Distribution — Including Top 50"
 
-                : "Swedish wealth distribution"
+                : "Sweden's Wealth Distribution"
 
         },
 
@@ -299,14 +360,16 @@ function updateChart() {
 
             text: includeTop50
 
-                ? "Including the estimated wealth threshold of Sweden's 50 wealthiest"
+                ? "The final pillar represents the wealth threshold of Sweden's 50 wealthiest individuals."
 
-                : "Percentile wealth thresholds, excluding the top 50"
+                : "Wealth thresholds by population percentile."
 
         },
 
 
         xAxis: {
+
+            categories: categories,
 
             title: {
 
@@ -314,9 +377,11 @@ function updateChart() {
 
             },
 
-            min: 0,
+            labels: {
 
-            max: 100
+                rotation: -45
+
+            }
 
         },
 
@@ -328,6 +393,7 @@ function updateChart() {
                 text: "Net wealth (SEK)"
 
             },
+
 
             labels: {
 
@@ -347,9 +413,7 @@ function updateChart() {
             formatter: function() {
 
 
-                // Special tooltip for Top 50
-
-                if (this.point.isTop50) {
+                if (this.category === "Top 50") {
 
                     return (
 
@@ -366,15 +430,13 @@ function updateChart() {
                 }
 
 
-                // Normal percentile tooltip
-
                 return (
 
                     "<b>" +
 
-                    this.x +
+                    this.category +
 
-                    "th percentile</b><br>" +
+                    "</b><br>" +
 
                     "Net wealth: <b>" +
 
@@ -389,86 +451,45 @@ function updateChart() {
         },
 
 
+        legend: {
+
+            enabled: false
+
+        },
+
+
+        plotOptions: {
+
+            column: {
+
+                pointPadding: 0.05,
+
+                groupPadding: 0.05,
+
+                borderWidth: 0
+
+            }
+
+        },
+
+
         series: [{
 
             name: "Net wealth",
 
-            data: seriesData,
-
-            color: "#1f77b4",
-
-            lineWidth: 3,
-
-            marker: {
-
-                enabled: false
-
-            }
+            data: values
 
         }]
 
     });
 
-
-    // --------------------------------------------------------
-    // Add special Top 50 marker
-    // --------------------------------------------------------
-
-    if (includeTop50) {
-
-
-        chart.addSeries({
-
-            name: "Sweden's 50 wealthiest",
-
-            type: "scatter",
-
-            data: [{
-
-                x: 99.999,
-
-                y: top50Threshold
-
-            }],
-
-            color: "#d62728",
-
-            marker: {
-
-                radius: 7,
-
-                symbol: "circle"
-
-            },
-
-            tooltip: {
-
-                pointFormatter: function() {
-
-                    return (
-
-                        "<br>Top 50 threshold: <b>" +
-
-                        formatSEK(this.y) +
-
-                        "</b>"
-
-                    );
-
-                }
-
-            }
-
-        });
-
-    }
-
 }
 
 
-// ============================================================
-// INITIAL CHART
-// ============================================================
+// ==========================================================
+// INITIALIZE
+// ==========================================================
+
 
 updateChart();
 
