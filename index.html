@@ -21,7 +21,7 @@
 
             font-family: Arial, sans-serif;
 
-            max-width: 1200px;
+            max-width: 1400px;
 
             margin: 40px auto;
 
@@ -47,7 +47,7 @@
 
             line-height: 1.6;
 
-            max-width: 900px;
+            max-width: 950px;
 
             margin-bottom: 25px;
 
@@ -83,7 +83,7 @@
 
             width: 100%;
 
-            height: 650px;
+            height: 700px;
 
         }
 
@@ -113,12 +113,11 @@
 
 <div class="description">
 
-    This visualization shows the estimated net wealth
-    associated with different points in the Swedish
-    wealth distribution.
+    This visualization shows estimated net wealth thresholds
+    for every percentile of the Swedish population.
 
-    The height of each pillar represents the net wealth
-    required to reach that percentile.
+    Each bar represents the wealth required to reach that
+    percentile.
 
 </div>
 
@@ -169,60 +168,127 @@
 
 
 // ==========================================================
-// WEALTH DATA
+// WEALTH DATA — PERCENTILES 1–99
 // ==========================================================
 //
-// Format:
+// These are PLACEHOLDER values.
+// Each entry is:
 //
 // [percentile, wealth in SEK]
-//
-// These values are placeholders.
-// We will replace them with real Swedish data.
 //
 // ==========================================================
 
 
 const wealthData = [
 
-    [1,      -120000],
+    [1, -120000],
+    [2, -80000],
+    [3, -50000],
+    [4, -20000],
+    [5, 0],
+    [6, 2000],
+    [7, 5000],
+    [8, 8000],
+    [9, 11000],
+    [10, 15000],
 
-    [5,           0],
+    [11, 19000],
+    [12, 23000],
+    [13, 27000],
+    [14, 32000],
+    [15, 37000],
+    [16, 42000],
+    [17, 47000],
+    [18, 53000],
+    [19, 65000],
+    [20, 80000],
 
-    [10,      15000],
+    [21, 90000],
+    [22, 100000],
+    [23, 110000],
+    [24, 120000],
+    [25, 135000],
+    [26, 145000],
+    [27, 155000],
+    [28, 165000],
+    [29, 175000],
+    [30, 180000],
 
-    [20,      80000],
+    [31, 190000],
+    [32, 205000],
+    [33, 220000],
+    [34, 235000],
+    [35, 250000],
+    [36, 270000],
+    [37, 290000],
+    [38, 310000],
+    [39, 330000],
+    [40, 350000],
 
-    [30,     180000],
+    [41, 370000],
+    [42, 390000],
+    [43, 410000],
+    [44, 435000],
+    [45, 460000],
+    [46, 490000],
+    [47, 520000],
+    [48, 555000],
+    [49, 580000],
+    [50, 600000],
 
-    [40,     350000],
+    [51, 630000],
+    [52, 660000],
+    [53, 690000],
+    [54, 720000],
+    [55, 750000],
+    [56, 790000],
+    [57, 830000],
+    [58, 870000],
+    [59, 910000],
+    [60, 950000],
 
-    [50,     600000],
+    [61, 1000000],
+    [62, 1050000],
+    [63, 1100000],
+    [64, 1150000],
+    [65, 1200000],
+    [66, 1250000],
+    [67, 1300000],
+    [68, 1350000],
+    [69, 1400000],
+    [70, 1450000],
 
-    [60,     950000],
+    [71, 1500000],
+    [72, 1550000],
+    [73, 1600000],
+    [74, 1650000],
+    [75, 1750000],
+    [76, 1850000],
+    [77, 1950000],
+    [78, 2050000],
+    [79, 2150000],
+    [80, 2250000],
 
-    [70,    1400000],
+    [81, 2350000],
+    [82, 2450000],
+    [83, 2600000],
+    [84, 2750000],
+    [85, 2900000],
+    [86, 3100000],
+    [87, 3300000],
+    [88, 3500000],
+    [89, 3700000],
+    [90, 3900000],
 
-    [80,    2200000],
-
-    [90,    3800000],
-
-    [91,    4100000],
-
-    [92,    4500000],
-
-    [93,    4900000],
-
-    [94,    5500000],
-
-    [95,    6500000],
-
-    [96,    7800000],
-
-    [97,    9500000],
-
-    [98,   12500000],
-
-    [99,   18000000]
+    [91, 4200000],
+    [92, 4500000],
+    [93, 4900000],
+    [94, 5500000],
+    [95, 6500000],
+    [96, 7800000],
+    [97, 9500000],
+    [98, 12500000],
+    [99, 18000000]
 
 ];
 
@@ -233,8 +299,8 @@ const wealthData = [
 //
 // PLACEHOLDER ONLY.
 //
-// This should eventually be the wealth of the
-// 50th wealthiest Swedish individual.
+// This will eventually be replaced with the actual wealth
+// of the 50th wealthiest Swedish individual.
 //
 // ==========================================================
 
@@ -243,7 +309,7 @@ const top50Threshold = 10000000000;
 
 
 // ==========================================================
-// FORMAT SWEDISH CURRENCY
+// FORMAT SEK
 // ==========================================================
 
 
@@ -262,7 +328,7 @@ function formatSEK(value) {
 
 
 // ==========================================================
-// CREATE CHART
+// CREATE / UPDATE CHART
 // ==========================================================
 
 
@@ -273,7 +339,7 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Check whether Top 50 is enabled
+    // Is Top 50 enabled?
     // ------------------------------------------------------
 
 
@@ -282,11 +348,12 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Create the normal percentile pillars
+    // Create categories
     // ------------------------------------------------------
 
 
     let categories = [];
+
 
     let values = [];
 
@@ -301,7 +368,7 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Add Top 50 pillar
+    // Add Top 50
     // ------------------------------------------------------
 
 
@@ -315,7 +382,7 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Destroy existing chart
+    // Destroy previous chart
     // ------------------------------------------------------
 
 
@@ -327,7 +394,7 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Create new chart
+    // Create chart
     // ------------------------------------------------------
 
 
@@ -338,9 +405,7 @@ function updateChart() {
 
             type: "column",
 
-            spacingTop: 30,
-
-            spacingBottom: 40
+            zoomType: "x"
 
         },
 
@@ -360,9 +425,9 @@ function updateChart() {
 
             text: includeTop50
 
-                ? "The final pillar represents the wealth threshold of Sweden's 50 wealthiest individuals."
+                ? "99 wealth percentiles plus the threshold for Sweden's 50 wealthiest individuals"
 
-                : "Wealth thresholds by population percentile."
+                : "99 wealth percentiles"
 
         },
 
@@ -377,9 +442,12 @@ function updateChart() {
 
             },
 
+
             labels: {
 
-                rotation: -45
+                rotation: -90,
+
+                step: 5
 
             }
 
@@ -412,12 +480,11 @@ function updateChart() {
 
             formatter: function() {
 
-
                 if (this.category === "Top 50") {
 
                     return (
 
-                        "<b>Top 50 wealth threshold</b><br>" +
+                        "<b>Top 50 threshold</b><br>" +
 
                         "Estimated wealth: <b>" +
 
@@ -436,7 +503,7 @@ function updateChart() {
 
                     this.category +
 
-                    "</b><br>" +
+                    " percentile</b><br>" +
 
                     "Net wealth: <b>" +
 
@@ -462,9 +529,9 @@ function updateChart() {
 
             column: {
 
-                pointPadding: 0.05,
+                pointPadding: 0,
 
-                groupPadding: 0.05,
+                groupPadding: 0.02,
 
                 borderWidth: 0
 
