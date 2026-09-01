@@ -13,7 +13,6 @@
 
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
-
     <style>
 
         body {
@@ -23,18 +22,15 @@
             color: #222;
         }
 
-
         h1 {
             font-size: 36px;
             margin-bottom: 8px;
         }
 
-
         .subtitle {
             font-size: 20px;
             margin-bottom: 25px;
         }
-
 
         .description {
             font-size: 17px;
@@ -43,27 +39,24 @@
             margin-bottom: 25px;
         }
 
-
         .toggle {
             margin: 25px 0;
             font-size: 17px;
         }
 
-
         .toggle label {
             cursor: pointer;
         }
 
-
         input[type="checkbox"] {
             transform: scale(1.3);
             margin-right: 10px;
+            cursor: pointer;
         }
 
-
         /*
-         * The graph is deliberately wider than the screen.
-         * Scroll horizontally to see all 99 bars.
+         * The graph is deliberately very wide.
+         * This prevents the 99 bars from being squeezed together.
          */
 
         .chart-wrapper {
@@ -75,12 +68,14 @@
             padding: 20px 0;
         }
 
+        /*
+         * 3000px gives each percentile substantially more room.
+         */
 
         #chart {
-            width: 2200px;
+            width: 3000px;
             height: 750px;
         }
-
 
         .source {
             font-size: 13px;
@@ -90,12 +85,10 @@
             max-width: 1000px;
         }
 
-
         .loading {
             font-size: 18px;
             padding: 40px 0;
         }
-
 
         .error {
             color: #a00;
@@ -125,9 +118,8 @@
     wealth threshold for each percentile of the Swedish
     adult population.
 
-    The 99th percentile represents the minimum wealth
-    required to be among the richest 1%.
-
+    Hover over a bar to see the wealth threshold
+    represented by that percentile.
 
 </div>
 
@@ -157,7 +149,9 @@
 <div id="error" class="error" style="display:none;"></div>
 
 
-<div class="chart-wrapper" style="display:none;" id="chartWrapper">
+<div class="chart-wrapper"
+     id="chartWrapper"
+     style="display:none;">
 
     <div id="chart"></div>
 
@@ -179,9 +173,7 @@
     <strong>Top 50 comparison:</strong>
     The additional Top 50 pillar uses the 2026
     Affärsvärlden estimate of SEK 10.2 billion for the
-    50th wealthiest Swedish individual. Three individuals
-    are tied at rank 48 at SEK 10.2 billion, so the
-    50-person cutoff is also SEK 10.2 billion.
+    50th wealthiest Swedish individual.
 
     <br><br>
 
@@ -200,17 +192,9 @@
 // ==========================================================
 
 
-// WID data file already stored in this GitHub repository.
-
 const WID_FILE = "wid_data.txt";
 
-
-// Static 2026 Top-50 threshold.
-
 const TOP50_THRESHOLD = 10200000000;
-
-
-// We use the 2024 WID data.
 
 const DATA_YEAR = "2024";
 
@@ -226,7 +210,7 @@ let chart = null;
 
 
 // ==========================================================
-// FORMAT SWEDISH KRONA
+// FORMAT SEK
 // ==========================================================
 
 
@@ -270,19 +254,6 @@ async function loadWIDData() {
         const lines = text
             .split(/\r?\n/)
             .filter(line => line.trim() !== "");
-
-
-        /*
-         * WID rows look like:
-         *
-         * SE;thwealj992;p0p1;2024;VALUE;992;j;0
-         *
-         * We only want:
-         *
-         * country = SE
-         * variable = thwealj992
-         * year = 2024
-         */
 
 
         const thresholds = {};
@@ -331,26 +302,28 @@ async function loadWIDData() {
         });
 
 
-        /*
-         * Build exactly 99 bars.
-         *
-         * 1% threshold = p0p1
-         * 2% threshold = p1p2
-         * ...
-         * 99% threshold = p98p99
-         */
-
-
         wealthData = [];
 
 
-        for (let percentile = 1; percentile <= 99; percentile++) {
+        /*
+         * Build exactly 99 bars:
+         *
+         * 1%  = p0p1
+         * 2%  = p1p2
+         * ...
+         * 99% = p98p99
+         */
 
+
+        for (
+            let percentile = 1;
+            percentile <= 99;
+            percentile++
+        ) {
 
             const lower = percentile - 1;
 
             const upper = percentile;
-
 
             const key =
                 "p" + lower + "p" + upper;
@@ -457,9 +430,9 @@ function updateChart() {
     const values = [];
 
 
-    // ------------------------------------------------------
-    // 99 REAL SWEDISH PERCENTILES
-    // ------------------------------------------------------
+    // ======================================================
+    // 99 PERCENTILE BARS
+    // ======================================================
 
 
     wealthData.forEach(function(point) {
@@ -483,9 +456,9 @@ function updateChart() {
     });
 
 
-    // ------------------------------------------------------
-    // ADD TOP 50
-    // ------------------------------------------------------
+    // ======================================================
+    // TOP 50
+    // ======================================================
 
 
     if (includeTop50) {
@@ -506,9 +479,9 @@ function updateChart() {
     }
 
 
-    // ------------------------------------------------------
+    // ======================================================
     // REMOVE OLD CHART
-    // ------------------------------------------------------
+    // ======================================================
 
 
     if (chart) {
@@ -518,9 +491,9 @@ function updateChart() {
     }
 
 
-    // ------------------------------------------------------
+    // ======================================================
     // CREATE CHART
-    // ------------------------------------------------------
+    // ======================================================
 
 
     chart = Highcharts.chart(
@@ -531,7 +504,15 @@ function updateChart() {
 
                 type: "column",
 
-                animation: false
+                animation: false,
+
+                /*
+                 * Larger mouse target around the columns.
+                 */
+
+                spacingLeft: 30,
+
+                spacingRight: 30
 
             },
 
@@ -539,12 +520,7 @@ function updateChart() {
             title: {
 
                 text:
-
-                    includeTop50
-
-                        ? "Sweden's Wealth Distribution"
-
-                        : "Sweden's Wealth Distribution"
+                    "Sweden's Wealth Distribution"
 
             },
 
@@ -574,11 +550,22 @@ function updateChart() {
                 },
 
 
+                /*
+                 * Only label every 5th percentile.
+                 * All 99 bars remain visible.
+                 */
+
                 labels: {
 
-                    rotation: -45,
+                    rotation: 0,
 
-                    step: 5
+                    step: 5,
+
+                    style: {
+
+                        fontSize: "13px"
+
+                    }
 
                 }
 
@@ -589,7 +576,8 @@ function updateChart() {
 
                 title: {
 
-                    text: "Net personal wealth (SEK)"
+                    text:
+                        "Net personal wealth (SEK)"
 
                 },
 
@@ -626,7 +614,24 @@ function updateChart() {
             },
 
 
+            /*
+             * The tooltip is deliberately large and easy to read.
+             */
+
             tooltip: {
+
+                shared: false,
+
+                useHTML: true,
+
+                backgroundColor: "#ffffff",
+
+                borderWidth: 1,
+
+                shadow: true,
+
+                padding: 14,
+
 
                 formatter: function() {
 
@@ -635,19 +640,23 @@ function updateChart() {
 
                         return (
 
-                            "<b>Top 50 threshold</b><br><br>" +
+                            "<div style='font-size:16px'>" +
 
-                            "Approx. wealth of the " +
+                            "<strong>Sweden's Top 50</strong>" +
 
-                            "50th wealthiest Swedish " +
+                            "</div>" +
 
-                            "individual:<br>" +
+                            "<br>" +
 
-                            "<b>" +
+                            "Wealth threshold:" +
+
+                            "<br>" +
+
+                            "<strong style='font-size:18px'>" +
 
                             formatSEK(this.y) +
 
-                            "</b>"
+                            "</strong>"
 
                         );
 
@@ -656,19 +665,27 @@ function updateChart() {
 
                     return (
 
-                        "<b>" +
+                        "<div style='font-size:16px'>" +
+
+                        "<strong>" +
 
                         this.point.percentile +
 
-                        "th percentile</b><br><br>" +
+                        "th percentile</strong>" +
 
-                        "Wealth threshold:<br>" +
+                        "</div>" +
 
-                        "<b>" +
+                        "<br>" +
+
+                        "Wealth threshold:" +
+
+                        "<br>" +
+
+                        "<strong style='font-size:18px'>" +
 
                         formatSEK(this.y) +
 
-                        "</b>"
+                        "</strong>"
 
                     );
 
@@ -676,6 +693,10 @@ function updateChart() {
 
             },
 
+
+            /*
+             * No legend is needed.
+             */
 
             legend: {
 
@@ -691,17 +712,52 @@ function updateChart() {
             },
 
 
+            /*
+             * IMPORTANT:
+             *
+             * Narrow bars + lots of space between them.
+             * This stops neighbouring bars visually merging.
+             */
+
             plotOptions: {
 
                 column: {
 
-                    pointPadding: 0.02,
+                    pointPadding: 0.12,
 
-                    groupPadding: 0.015,
+                    groupPadding: 0.08,
 
                     borderWidth: 0,
 
-                    minPointLength: 1
+                    maxPointWidth: 18,
+
+                    cursor: "pointer",
+
+                    states: {
+
+                        hover: {
+
+                            brightness: 0.15
+
+                        }
+
+                    }
+
+                },
+
+                series: {
+
+                    stickyTracking: true,
+
+                    states: {
+
+                        inactive: {
+
+                            opacity: 1
+
+                        }
+
+                    }
 
                 }
 
@@ -712,9 +768,17 @@ function updateChart() {
 
                 {
 
-                    name: "Wealth threshold",
+                    name:
+                        "Wealth threshold",
 
-                    data: values
+                    data: values,
+
+                    /*
+                     * Makes hovering easier by giving
+                     * the series a generous tracking area.
+                     */
+
+                    enableMouseTracking: true
 
                 }
 
