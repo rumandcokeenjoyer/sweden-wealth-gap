@@ -22,15 +22,18 @@
             color: #222;
         }
 
+
         h1 {
             font-size: 36px;
             margin-bottom: 8px;
         }
 
+
         .subtitle {
             font-size: 20px;
             margin-bottom: 25px;
         }
+
 
         .description {
             font-size: 17px;
@@ -39,14 +42,17 @@
             margin-bottom: 25px;
         }
 
+
         .toggle {
             margin: 25px 0;
             font-size: 17px;
         }
 
+
         .toggle label {
             cursor: pointer;
         }
+
 
         input[type="checkbox"] {
             transform: scale(1.3);
@@ -54,28 +60,30 @@
             cursor: pointer;
         }
 
+
         /*
-         * The graph is deliberately very wide.
-         * This prevents the 99 bars from being squeezed together.
+         * The graph now uses the available screen width.
+         * No horizontal scrolling.
          */
 
         .chart-wrapper {
             width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
+            overflow: hidden;
             border-top: 1px solid #ddd;
             border-bottom: 1px solid #ddd;
             padding: 20px 0;
         }
 
+
         /*
-         * 3000px gives each percentile substantially more room.
+         * Similar overall proportions to the original.
          */
 
         #chart {
-            width: 3000px;
-            height: 750px;
+            width: 100%;
+            height: 650px;
         }
+
 
         .source {
             font-size: 13px;
@@ -85,10 +93,12 @@
             max-width: 1000px;
         }
 
+
         .loading {
             font-size: 18px;
             padding: 40px 0;
         }
+
 
         .error {
             color: #a00;
@@ -146,7 +156,10 @@
 </div>
 
 
-<div id="error" class="error" style="display:none;"></div>
+<div id="error"
+     class="error"
+     style="display:none;">
+</div>
 
 
 <div class="chart-wrapper"
@@ -237,7 +250,9 @@ async function loadWIDData() {
 
     try {
 
-        const response = await fetch(WID_FILE);
+        const response =
+            await fetch(WID_FILE);
+
 
         if (!response.ok) {
 
@@ -248,12 +263,16 @@ async function loadWIDData() {
         }
 
 
-        const text = await response.text();
+        const text =
+            await response.text();
 
 
-        const lines = text
+        const lines =
+            text
             .split(/\r?\n/)
-            .filter(line => line.trim() !== "");
+            .filter(
+                line => line.trim() !== ""
+            );
 
 
         const thresholds = {};
@@ -261,23 +280,36 @@ async function loadWIDData() {
 
         lines.forEach(function(line) {
 
-            const parts = line.split(";");
+
+            const parts =
+                line.split(";");
 
 
             if (parts.length < 5) {
+
                 return;
+
             }
 
 
-            const country = parts[0];
+            const country =
+                parts[0];
 
-            const variable = parts[1];
 
-            const percentile = parts[2];
+            const variable =
+                parts[1];
 
-            const year = parts[3];
 
-            const value = Number(parts[4]);
+            const percentile =
+                parts[2];
+
+
+            const year =
+                parts[3];
+
+
+            const value =
+                Number(parts[4]);
 
 
             if (
@@ -297,7 +329,8 @@ async function loadWIDData() {
             }
 
 
-            thresholds[percentile] = value;
+            thresholds[percentile] =
+                value;
 
         });
 
@@ -306,11 +339,11 @@ async function loadWIDData() {
 
 
         /*
-         * Build exactly 99 bars:
-         *
          * 1%  = p0p1
          * 2%  = p1p2
+         *
          * ...
+         *
          * 99% = p98p99
          */
 
@@ -321,20 +354,23 @@ async function loadWIDData() {
             percentile++
         ) {
 
-            const lower = percentile - 1;
 
-            const upper = percentile;
+            const lower =
+                percentile - 1;
+
+
+            const upper =
+                percentile;
+
 
             const key =
-                "p" + lower + "p" + upper;
+                "p" +
+                lower +
+                "p" +
+                upper;
 
 
             if (!(key in thresholds)) {
-
-                console.warn(
-                    "Missing WID percentile:",
-                    key
-                );
 
                 continue;
 
@@ -343,9 +379,11 @@ async function loadWIDData() {
 
             wealthData.push({
 
-                percentile: percentile,
+                percentile:
+                    percentile,
 
-                value: thresholds[key]
+                value:
+                    thresholds[key]
 
             });
 
@@ -355,18 +393,19 @@ async function loadWIDData() {
         if (wealthData.length !== 99) {
 
             throw new Error(
-                "Expected 99 percentile values, but found " +
-                wealthData.length
+                "Expected 99 percentile values."
             );
 
         }
 
 
-        document.getElementById("loading")
+        document
+            .getElementById("loading")
             .style.display = "none";
 
 
-        document.getElementById("chartWrapper")
+        document
+            .getElementById("chartWrapper")
             .style.display = "block";
 
 
@@ -375,27 +414,36 @@ async function loadWIDData() {
 
     } catch (error) {
 
+
         console.error(error);
 
 
-        document.getElementById("loading")
+        document
+            .getElementById("loading")
             .style.display = "none";
 
 
         const errorBox =
-            document.getElementById("error");
+            document.getElementById(
+                "error"
+            );
 
 
-        errorBox.style.display = "block";
+        errorBox.style.display =
+            "block";
 
 
         errorBox.innerHTML =
 
-            "<strong>Could not load the data.</strong><br><br>" +
+            "<strong>" +
+            "Could not load the data." +
+            "</strong><br><br>" +
 
-            "Make sure that <code>wid_data.txt</code> " +
+            "Make sure that " +
 
-            "is in the same GitHub folder as " +
+            "<code>wid_data.txt</code> " +
+
+            "is in the same folder as " +
 
             "<code>index.html</code>.";
 
@@ -405,14 +453,16 @@ async function loadWIDData() {
 
 
 // ==========================================================
-// UPDATE CHART
+// CREATE / UPDATE CHART
 // ==========================================================
 
 
 function updateChart() {
 
 
-    if (wealthData.length === 0) {
+    if (
+        wealthData.length === 0
+    ) {
 
         return;
 
@@ -431,29 +481,34 @@ function updateChart() {
 
 
     // ======================================================
-    // 99 PERCENTILE BARS
+    // 99 PERCENTILES
     // ======================================================
 
 
-    wealthData.forEach(function(point) {
-
-        categories.push(
-            point.percentile + "%"
-        );
+    wealthData.forEach(
+        function(point) {
 
 
-        values.push({
+            categories.push(
+                point.percentile + "%"
+            );
 
-            y: point.value,
 
-            percentile:
-                point.percentile,
+            values.push({
 
-            isTop50: false
+                y:
+                    point.value,
 
-        });
+                percentile:
+                    point.percentile,
 
-    });
+                isTop50:
+                    false
+
+            });
+
+        }
+    );
 
 
     // ======================================================
@@ -463,16 +518,22 @@ function updateChart() {
 
     if (includeTop50) {
 
-        categories.push("TOP 50");
+
+        categories.push(
+            "TOP 50"
+        );
 
 
         values.push({
 
-            y: TOP50_THRESHOLD,
+            y:
+                TOP50_THRESHOLD,
 
-            percentile: null,
+            percentile:
+                null,
 
-            isTop50: true
+            isTop50:
+                true
 
         });
 
@@ -496,297 +557,345 @@ function updateChart() {
     // ======================================================
 
 
-    chart = Highcharts.chart(
-        "chart",
-        {
-
-            chart: {
-
-                type: "column",
-
-                animation: false,
-
-                /*
-                 * Larger mouse target around the columns.
-                 */
-
-                spacingLeft: 30,
-
-                spacingRight: 30
-
-            },
+    chart =
+        Highcharts.chart(
+            "chart",
+            {
 
 
-            title: {
+                chart: {
 
-                text:
-                    "Sweden's Wealth Distribution"
+                    type:
+                        "column",
 
-            },
+                    animation:
+                        false,
 
+                    spacingTop:
+                        20,
 
-            subtitle: {
+                    spacingBottom:
+                        20,
 
-                text:
+                    spacingLeft:
+                        10,
 
-                    includeTop50
-
-                        ? "99 wealth percentiles + Top 50 threshold"
-
-                        : "99 wealth percentiles"
-
-            },
-
-
-            xAxis: {
-
-                categories: categories,
-
-
-                title: {
-
-                    text: "Population percentile"
+                    spacingRight:
+                        10
 
                 },
 
-
-                /*
-                 * Only label every 5th percentile.
-                 * All 99 bars remain visible.
-                 */
-
-                labels: {
-
-                    rotation: 0,
-
-                    step: 5,
-
-                    style: {
-
-                        fontSize: "13px"
-
-                    }
-
-                }
-
-            },
-
-
-            yAxis: {
 
                 title: {
 
                     text:
-                        "Net personal wealth (SEK)"
+                        "Sweden's Wealth Distribution"
 
                 },
 
 
-                labels: {
+                subtitle: {
 
-                    formatter: function() {
+                    text:
 
-                        return formatSEK(
-                            this.value
-                        );
+                        includeTop50
+
+                            ? "99 wealth percentiles + Top 50 threshold"
+
+                            : "99 wealth percentiles"
+
+                },
+
+
+                xAxis: {
+
+
+                    categories:
+                        categories,
+
+
+                    title: {
+
+                        text:
+                            "Population percentile"
+
+                    },
+
+
+                    /*
+                     * Only show every 10th label.
+                     * The bars themselves are all present.
+                     */
+
+                    labels: {
+
+                        rotation:
+                            0,
+
+                        step:
+                            10,
+
+                        style: {
+
+                            fontSize:
+                                "12px"
+
+                        }
 
                     }
 
                 },
 
 
-                plotLines: [
+                yAxis: {
+
+
+                    title: {
+
+                        text:
+                            "Net personal wealth (SEK)"
+
+                    },
+
+
+                    labels: {
+
+                        formatter:
+                            function() {
+
+                                return formatSEK(
+                                    this.value
+                                );
+
+                            }
+
+                    },
+
+
+                    plotLines: [
+
+                        {
+
+                            value:
+                                0,
+
+                            width:
+                                1,
+
+                            color:
+                                "#777",
+
+                            zIndex:
+                                5
+
+                        }
+
+                    ]
+
+                },
+
+
+                // =================================================
+                // HOVER
+                // =================================================
+
+
+                tooltip: {
+
+
+                    useHTML:
+                        true,
+
+                    backgroundColor:
+                        "#ffffff",
+
+                    borderWidth:
+                        1,
+
+                    shadow:
+                        true,
+
+                    padding:
+                        12,
+
+
+                    formatter:
+                        function() {
+
+
+                            if (
+                                this.point.isTop50
+                            ) {
+
+
+                                return (
+
+                                    "<strong>" +
+
+                                    "Sweden's Top 50" +
+
+                                    "</strong>" +
+
+                                    "<br><br>" +
+
+                                    "Wealth threshold:" +
+
+                                    "<br>" +
+
+                                    "<strong>" +
+
+                                    formatSEK(
+                                        this.y
+                                    ) +
+
+                                    "</strong>"
+
+                                );
+
+                            }
+
+
+                            return (
+
+                                "<strong>" +
+
+                                this.point.percentile +
+
+                                "th percentile" +
+
+                                "</strong>" +
+
+                                "<br><br>" +
+
+                                "Wealth threshold:" +
+
+                                "<br>" +
+
+                                "<strong>" +
+
+                                formatSEK(
+                                    this.y
+                                ) +
+
+                                "</strong>"
+
+                            );
+
+                        }
+
+                },
+
+
+                legend: {
+
+                    enabled:
+                        false
+
+                },
+
+
+                credits: {
+
+                    enabled:
+                        false
+
+                },
+
+
+                // =================================================
+                // BAR APPEARANCE
+                // =================================================
+
+
+                plotOptions: {
+
+
+                    column: {
+
+
+                        /*
+                         * Small gaps between bars.
+                         */
+
+                        pointPadding:
+                            0.01,
+
+
+                        groupPadding:
+                            0.015,
+
+
+                        /*
+                         * Let Highcharts determine
+                         * the natural width.
+                         */
+
+                        borderWidth:
+                            0,
+
+
+                        cursor:
+                            "pointer",
+
+
+                        states: {
+
+                            hover: {
+
+                                brightness:
+                                    0.12
+
+                            }
+
+                        }
+
+                    },
+
+
+                    series: {
+
+
+                        stickyTracking:
+                            true,
+
+                        states: {
+
+                            inactive: {
+
+                                opacity:
+                                    1
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+
+                series: [
+
 
                     {
 
-                        value: 0,
+                        name:
+                            "Wealth threshold",
 
-                        width: 1,
 
-                        color: "#777",
+                        data:
+                            values,
 
-                        zIndex: 5
+
+                        enableMouseTracking:
+                            true
 
                     }
 
                 ]
 
-            },
-
-
-            /*
-             * The tooltip is deliberately large and easy to read.
-             */
-
-            tooltip: {
-
-                shared: false,
-
-                useHTML: true,
-
-                backgroundColor: "#ffffff",
-
-                borderWidth: 1,
-
-                shadow: true,
-
-                padding: 14,
-
-
-                formatter: function() {
-
-
-                    if (this.point.isTop50) {
-
-                        return (
-
-                            "<div style='font-size:16px'>" +
-
-                            "<strong>Sweden's Top 50</strong>" +
-
-                            "</div>" +
-
-                            "<br>" +
-
-                            "Wealth threshold:" +
-
-                            "<br>" +
-
-                            "<strong style='font-size:18px'>" +
-
-                            formatSEK(this.y) +
-
-                            "</strong>"
-
-                        );
-
-                    }
-
-
-                    return (
-
-                        "<div style='font-size:16px'>" +
-
-                        "<strong>" +
-
-                        this.point.percentile +
-
-                        "th percentile</strong>" +
-
-                        "</div>" +
-
-                        "<br>" +
-
-                        "Wealth threshold:" +
-
-                        "<br>" +
-
-                        "<strong style='font-size:18px'>" +
-
-                        formatSEK(this.y) +
-
-                        "</strong>"
-
-                    );
-
-                }
-
-            },
-
-
-            /*
-             * No legend is needed.
-             */
-
-            legend: {
-
-                enabled: false
-
-            },
-
-
-            credits: {
-
-                enabled: false
-
-            },
-
-
-            /*
-             * IMPORTANT:
-             *
-             * Narrow bars + lots of space between them.
-             * This stops neighbouring bars visually merging.
-             */
-
-            plotOptions: {
-
-                column: {
-
-                    pointPadding: 0.12,
-
-                    groupPadding: 0.08,
-
-                    borderWidth: 0,
-
-                    maxPointWidth: 18,
-
-                    cursor: "pointer",
-
-                    states: {
-
-                        hover: {
-
-                            brightness: 0.15
-
-                        }
-
-                    }
-
-                },
-
-                series: {
-
-                    stickyTracking: true,
-
-                    states: {
-
-                        inactive: {
-
-                            opacity: 1
-
-                        }
-
-                    }
-
-                }
-
-            },
-
-
-            series: [
-
-                {
-
-                    name:
-                        "Wealth threshold",
-
-                    data: values,
-
-                    /*
-                     * Makes hovering easier by giving
-                     * the series a generous tracking area.
-                     */
-
-                    enableMouseTracking: true
-
-                }
-
-            ]
-
-        }
-
-    );
+            }
+        );
 
 }
 
