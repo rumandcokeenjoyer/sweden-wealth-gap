@@ -140,11 +140,11 @@
 
         <input
             type="checkbox"
-            id="top50Toggle"
+            id="top45Toggle"
             onchange="updateChart()"
         >
 
-        Include Sweden's 50 wealthiest individuals (2026)
+        Include Sweden's 45 wealthiest individuals (2024)
 
     </label>
 
@@ -183,10 +183,10 @@
 
     <br><br>
 
-    <strong>Top 50 comparison:</strong>
-    The additional Top 50 pillar uses the 2026
-    Affärsvärlden estimate of SEK 10.2 billion for the
-    50th wealthiest Swedish individual.
+    <strong>Top 45 comparison:</strong>
+    The additional Top 45 pillar uses the 2025
+    Affärsvärlden estimate of SEK 10.1 billion for the
+    45th wealthiest Swedish individual.
 
     <br><br>
 
@@ -207,7 +207,7 @@
 
 const WID_FILE = "wid_data.txt";
 
-const TOP50_THRESHOLD = 10200000000;
+const TOP45_THRESHOLD = 10100000000;
 
 const DATA_YEAR = "2024";
 
@@ -469,9 +469,9 @@ function updateChart() {
     }
 
 
-    const includeTop50 =
+    const includeTop45 =
         document.getElementById(
-            "top50Toggle"
+            "top45Toggle"
         ).checked;
 
 
@@ -502,7 +502,7 @@ function updateChart() {
                 percentile:
                     point.percentile,
 
-                isTop50:
+                isTop45:
                     false
 
             });
@@ -512,27 +512,27 @@ function updateChart() {
 
 
     // ======================================================
-    // TOP 50
+    // TOP 45
     // ======================================================
 
 
-    if (includeTop50) {
+    if (includeTop45) {
 
 
         categories.push(
-            "TOP 50"
+            "TOP 45"
         );
 
 
         values.push({
 
             y:
-                TOP50_THRESHOLD,
+                TOP45_THRESHOLD,
 
             percentile:
                 null,
 
-            isTop50:
+            isTop45:
                 true
 
         });
@@ -600,7 +600,7 @@ function updateChart() {
 
                         includeTop50
 
-                            ? "99 wealth percentiles + Top 50 threshold"
+                            ? "99 wealth percentiles + Top 45 threshold"
 
                             : "99 wealth percentiles"
 
@@ -724,7 +724,7 @@ function updateChart() {
 
 
                             if (
-                                this.point.isTop50
+                                this.point.isTop45
                             ) {
 
 
@@ -732,7 +732,7 @@ function updateChart() {
 
                                     "<strong>" +
 
-                                    "Sweden's Top 50" +
+                                    "Sweden's Top 45" +
 
                                     "</strong>" +
 
