@@ -105,6 +105,95 @@
             font-size: 18px;
             padding: 40px 0;
         }
+```css
+/* ==========================================================
+   MOBILE VERSION
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    body {
+        margin: 18px;
+        padding: 0;
+    }
+
+
+    h1 {
+        font-size: 27px;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+
+    .subtitle {
+        font-size: 17px;
+        margin-bottom: 18px;
+    }
+
+
+    .description {
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 18px;
+    }
+
+
+    .toggle {
+        margin: 18px 0;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+
+    input[type="checkbox"] {
+        transform: scale(1.25);
+        margin-right: 8px;
+    }
+
+
+    /*
+     * On mobile the chart gets its own scrollable area.
+     *
+     * This is important because 99 bars cannot be
+     * displayed clearly across a 390px phone screen.
+     */
+
+    .chart-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        padding: 10px 0 15px 0;
+    }
+
+
+    /*
+     * Keep the chart wide enough that the 99 bars
+     * remain individually visible.
+     *
+     * The user can swipe horizontally.
+     */
+
+    #chart {
+        width: 1400px;
+        height: 520px;
+    }
+
+
+    /*
+     * Make the chart text smaller on phones.
+     */
+
+    .source {
+        font-size: 12px;
+        line-height: 1.5;
+        margin-top: 18px;
+    }
+
+}
+```
 
     </style>
 
