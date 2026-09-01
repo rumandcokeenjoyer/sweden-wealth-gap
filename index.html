@@ -17,113 +17,90 @@
     <style>
 
         body {
-
             font-family: Arial, sans-serif;
-
             margin: 40px;
-
             padding: 0;
-
             color: #222;
-
         }
 
 
         h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
 
-            font-size: 34px;
 
-            margin-bottom: 10px;
-
+        .subtitle {
+            font-size: 20px;
+            margin-bottom: 25px;
         }
 
 
         .description {
-
             font-size: 17px;
-
             line-height: 1.6;
-
             max-width: 1000px;
-
             margin-bottom: 25px;
-
         }
 
 
         .toggle {
-
-            margin: 20px 0;
-
+            margin: 25px 0;
             font-size: 17px;
-
         }
 
 
         .toggle label {
-
             cursor: pointer;
-
         }
 
 
         input[type="checkbox"] {
-
             transform: scale(1.3);
-
             margin-right: 10px;
-
         }
 
 
-        /* =====================================================
-           THIS CREATES THE HORIZONTAL SCROLL
-           ===================================================== */
-
+        /*
+         * The graph is deliberately wider than the screen.
+         * Scroll horizontally to see all 99 bars.
+         */
 
         .chart-wrapper {
-
             width: 100%;
-
             overflow-x: auto;
-
             overflow-y: hidden;
-
             border-top: 1px solid #ddd;
-
             border-bottom: 1px solid #ddd;
-
             padding: 20px 0;
-
         }
-
-
-        /* =====================================================
-           THE CHART IS NOW MUCH WIDER THAN THE SCREEN
-           ===================================================== */
 
 
         #chart {
-
             width: 2200px;
-
             height: 750px;
-
         }
 
 
         .source {
-
             font-size: 13px;
-
             color: #666;
-
-            line-height: 1.5;
-
-            margin-top: 20px;
-
+            line-height: 1.6;
+            margin-top: 25px;
             max-width: 1000px;
+        }
 
+
+        .loading {
+            font-size: 18px;
+            padding: 40px 0;
+        }
+
+
+        .error {
+            color: #a00;
+            font-size: 18px;
+            padding: 40px 0;
         }
 
     </style>
@@ -137,13 +114,20 @@
 <h1>Sweden's Wealth Distribution</h1>
 
 
+<div class="subtitle">
+    Wealth thresholds by percentile, 2024
+</div>
+
+
 <div class="description">
 
-    This visualization shows estimated net wealth thresholds
-    for every percentile of the Swedish population.
+    This visualization shows the estimated net personal
+    wealth threshold for each percentile of the Swedish
+    adult population.
 
-    Each bar represents the wealth associated with that
-    percentile.
+    The 99th percentile represents the minimum wealth
+    required to be among the richest 1%.
+
 
 </div>
 
@@ -158,19 +142,22 @@
             onchange="updateChart()"
         >
 
-        Include Sweden's 50 wealthiest individuals
+        Include Sweden's 50 wealthiest individuals (2026)
 
     </label>
 
 </div>
 
 
-<!-- ========================================================
-     WIDE, SCROLLABLE GRAPH
-     ======================================================== -->
+<div id="loading" class="loading">
+    Loading Swedish wealth data...
+</div>
 
 
-<div class="chart-wrapper">
+<div id="error" class="error" style="display:none;"></div>
+
+
+<div class="chart-wrapper" style="display:none;" id="chartWrapper">
 
     <div id="chart"></div>
 
@@ -179,11 +166,27 @@
 
 <div class="source">
 
-    <strong>Data note:</strong>
+    <strong>Data:</strong>
+    World Inequality Database (WID), Sweden,
+    net personal wealth thresholds, 2024.
 
-    The wealth figures currently used are illustrative
-    placeholders. They should be replaced with verified
-    Swedish wealth-distribution data before publication.
+    The percentile bars use WID's
+    <em>thwealj992</em> series for equal-split adults
+    aged 20+.
+
+    <br><br>
+
+    <strong>Top 50 comparison:</strong>
+    The additional Top 50 pillar uses the 2026
+    Affärsvärlden estimate of SEK 10.2 billion for the
+    50th wealthiest Swedish individual. Three individuals
+    are tied at rank 48 at SEK 10.2 billion, so the
+    50-person cutoff is also SEK 10.2 billion.
+
+    <br><br>
+
+    This is a static snapshot. The website does not
+    automatically update the data.
 
 </div>
 
@@ -193,148 +196,47 @@
 
 
 // ==========================================================
-// WEALTH DATA — PERCENTILES 1–99
-// ==========================================================
-//
-// PLACEHOLDER VALUES
-//
+// SETTINGS
 // ==========================================================
 
 
-const wealthData = [
+// WID data file already stored in this GitHub repository.
 
-    [1, -120000],
-    [2, -80000],
-    [3, -50000],
-    [4, -20000],
-    [5, 0],
-    [6, 2000],
-    [7, 5000],
-    [8, 8000],
-    [9, 11000],
-    [10, 15000],
+const WID_FILE = "wid_data.txt";
 
-    [11, 19000],
-    [12, 23000],
-    [13, 27000],
-    [14, 32000],
-    [15, 37000],
-    [16, 42000],
-    [17, 47000],
-    [18, 53000],
-    [19, 65000],
-    [20, 80000],
 
-    [21, 90000],
-    [22, 100000],
-    [23, 110000],
-    [24, 120000],
-    [25, 135000],
-    [26, 145000],
-    [27, 155000],
-    [28, 165000],
-    [29, 175000],
-    [30, 180000],
+// Static 2026 Top-50 threshold.
 
-    [31, 190000],
-    [32, 205000],
-    [33, 220000],
-    [34, 235000],
-    [35, 250000],
-    [36, 270000],
-    [37, 290000],
-    [38, 310000],
-    [39, 330000],
-    [40, 350000],
+const TOP50_THRESHOLD = 10200000000;
 
-    [41, 370000],
-    [42, 390000],
-    [43, 410000],
-    [44, 435000],
-    [45, 460000],
-    [46, 490000],
-    [47, 520000],
-    [48, 555000],
-    [49, 580000],
-    [50, 600000],
 
-    [51, 630000],
-    [52, 660000],
-    [53, 690000],
-    [54, 720000],
-    [55, 750000],
-    [56, 790000],
-    [57, 830000],
-    [58, 870000],
-    [59, 910000],
-    [60, 950000],
+// We use the 2024 WID data.
 
-    [61, 1000000],
-    [62, 1050000],
-    [63, 1100000],
-    [64, 1150000],
-    [65, 1200000],
-    [66, 1250000],
-    [67, 1300000],
-    [68, 1350000],
-    [69, 1400000],
-    [70, 1450000],
-
-    [71, 1500000],
-    [72, 1550000],
-    [73, 1600000],
-    [74, 1650000],
-    [75, 1750000],
-    [76, 1850000],
-    [77, 1950000],
-    [78, 2050000],
-    [79, 2150000],
-    [80, 2250000],
-
-    [81, 2350000],
-    [82, 2450000],
-    [83, 2600000],
-    [84, 2750000],
-    [85, 2900000],
-    [86, 3100000],
-    [87, 3300000],
-    [88, 3500000],
-    [89, 3700000],
-    [90, 3900000],
-
-    [91, 4200000],
-    [92, 4500000],
-    [93, 4900000],
-    [94, 5500000],
-    [95, 6500000],
-    [96, 7800000],
-    [97, 9500000],
-    [98, 12500000],
-    [99, 18000000]
-
-];
+const DATA_YEAR = "2024";
 
 
 // ==========================================================
-// TOP 50
+// GLOBAL DATA
 // ==========================================================
 
 
-const top50Threshold = 10000000000;
+let wealthData = [];
+
+let chart = null;
 
 
 // ==========================================================
-// FORMAT SEK
+// FORMAT SWEDISH KRONA
 // ==========================================================
 
 
 function formatSEK(value) {
 
     return new Intl.NumberFormat(
-        'sv-SE',
+        "sv-SE",
         {
-            style: 'currency',
-            currency: 'SEK',
+            style: "currency",
+            currency: "SEK",
             maximumFractionDigits: 0
         }
     ).format(value);
@@ -343,41 +245,246 @@ function formatSEK(value) {
 
 
 // ==========================================================
-// CREATE CHART
+// LOAD WID DATA
 // ==========================================================
 
 
-let chart;
+async function loadWIDData() {
+
+    try {
+
+        const response = await fetch(WID_FILE);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load wid_data.txt"
+            );
+
+        }
+
+
+        const text = await response.text();
+
+
+        const lines = text
+            .split(/\r?\n/)
+            .filter(line => line.trim() !== "");
+
+
+        /*
+         * WID rows look like:
+         *
+         * SE;thwealj992;p0p1;2024;VALUE;992;j;0
+         *
+         * We only want:
+         *
+         * country = SE
+         * variable = thwealj992
+         * year = 2024
+         */
+
+
+        const thresholds = {};
+
+
+        lines.forEach(function(line) {
+
+            const parts = line.split(";");
+
+
+            if (parts.length < 5) {
+                return;
+            }
+
+
+            const country = parts[0];
+
+            const variable = parts[1];
+
+            const percentile = parts[2];
+
+            const year = parts[3];
+
+            const value = Number(parts[4]);
+
+
+            if (
+
+                country !== "SE" ||
+
+                variable !== "thwealj992" ||
+
+                year !== DATA_YEAR ||
+
+                !Number.isFinite(value)
+
+            ) {
+
+                return;
+
+            }
+
+
+            thresholds[percentile] = value;
+
+        });
+
+
+        /*
+         * Build exactly 99 bars.
+         *
+         * 1% threshold = p0p1
+         * 2% threshold = p1p2
+         * ...
+         * 99% threshold = p98p99
+         */
+
+
+        wealthData = [];
+
+
+        for (let percentile = 1; percentile <= 99; percentile++) {
+
+
+            const lower = percentile - 1;
+
+            const upper = percentile;
+
+
+            const key =
+                "p" + lower + "p" + upper;
+
+
+            if (!(key in thresholds)) {
+
+                console.warn(
+                    "Missing WID percentile:",
+                    key
+                );
+
+                continue;
+
+            }
+
+
+            wealthData.push({
+
+                percentile: percentile,
+
+                value: thresholds[key]
+
+            });
+
+        }
+
+
+        if (wealthData.length !== 99) {
+
+            throw new Error(
+                "Expected 99 percentile values, but found " +
+                wealthData.length
+            );
+
+        }
+
+
+        document.getElementById("loading")
+            .style.display = "none";
+
+
+        document.getElementById("chartWrapper")
+            .style.display = "block";
+
+
+        updateChart();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        document.getElementById("loading")
+            .style.display = "none";
+
+
+        const errorBox =
+            document.getElementById("error");
+
+
+        errorBox.style.display = "block";
+
+
+        errorBox.innerHTML =
+
+            "<strong>Could not load the data.</strong><br><br>" +
+
+            "Make sure that <code>wid_data.txt</code> " +
+
+            "is in the same GitHub folder as " +
+
+            "<code>index.html</code>.";
+
+    }
+
+}
+
+
+// ==========================================================
+// UPDATE CHART
+// ==========================================================
 
 
 function updateChart() {
 
 
+    if (wealthData.length === 0) {
+
+        return;
+
+    }
+
+
     const includeTop50 =
-        document.getElementById("top50Toggle").checked;
+        document.getElementById(
+            "top50Toggle"
+        ).checked;
 
 
-    let categories = [];
+    const categories = [];
 
-    let values = [];
+    const values = [];
 
 
     // ------------------------------------------------------
-    // Add all 99 percentiles
+    // 99 REAL SWEDISH PERCENTILES
     // ------------------------------------------------------
 
 
     wealthData.forEach(function(point) {
 
-        categories.push(point[0] + "%");
+        categories.push(
+            point.percentile + "%"
+        );
 
-        values.push(point[1]);
+
+        values.push({
+
+            y: point.value,
+
+            percentile:
+                point.percentile,
+
+            isTop50: false
+
+        });
 
     });
 
 
     // ------------------------------------------------------
-    // Add Top 50
+    // ADD TOP 50
     // ------------------------------------------------------
 
 
@@ -385,13 +492,22 @@ function updateChart() {
 
         categories.push("TOP 50");
 
-        values.push(top50Threshold);
+
+        values.push({
+
+            y: TOP50_THRESHOLD,
+
+            percentile: null,
+
+            isTop50: true
+
+        });
 
     }
 
 
     // ------------------------------------------------------
-    // Destroy previous chart
+    // REMOVE OLD CHART
     // ------------------------------------------------------
 
 
@@ -403,98 +519,152 @@ function updateChart() {
 
 
     // ------------------------------------------------------
-    // Create chart
+    // CREATE CHART
     // ------------------------------------------------------
 
 
-    chart = Highcharts.chart("chart", {
+    chart = Highcharts.chart(
+        "chart",
+        {
 
+            chart: {
 
-        chart: {
+                type: "column",
 
-            type: "column"
-
-        },
-
-
-        title: {
-
-            text: includeTop50
-
-                ? "Sweden's Wealth Distribution — Including Top 50"
-
-                : "Sweden's Wealth Distribution"
-
-        },
-
-
-        subtitle: {
-
-            text: includeTop50
-
-                ? "99 wealth percentiles plus Sweden's 50 wealthiest individuals"
-
-                : "Wealth thresholds for percentiles 1–99"
-
-        },
-
-
-        xAxis: {
-
-            categories: categories,
-
-            title: {
-
-                text: "Population percentile"
+                animation: false
 
             },
 
 
-            labels: {
-
-                rotation: -45,
-
-                step: 5
-
-            }
-
-        },
-
-
-        yAxis: {
-
             title: {
 
-                text: "Net wealth (SEK)"
+                text:
+
+                    includeTop50
+
+                        ? "Sweden's Wealth Distribution"
+
+                        : "Sweden's Wealth Distribution"
 
             },
 
 
-            labels: {
+            subtitle: {
 
-                formatter: function() {
+                text:
 
-                    return formatSEK(this.value);
+                    includeTop50
+
+                        ? "99 wealth percentiles + Top 50 threshold"
+
+                        : "99 wealth percentiles"
+
+            },
+
+
+            xAxis: {
+
+                categories: categories,
+
+
+                title: {
+
+                    text: "Population percentile"
+
+                },
+
+
+                labels: {
+
+                    rotation: -45,
+
+                    step: 5
 
                 }
 
-            }
-
-        },
+            },
 
 
-        tooltip: {
+            yAxis: {
 
-            formatter: function() {
+                title: {
+
+                    text: "Net personal wealth (SEK)"
+
+                },
 
 
-                if (this.category === "TOP 50") {
+                labels: {
+
+                    formatter: function() {
+
+                        return formatSEK(
+                            this.value
+                        );
+
+                    }
+
+                },
+
+
+                plotLines: [
+
+                    {
+
+                        value: 0,
+
+                        width: 1,
+
+                        color: "#777",
+
+                        zIndex: 5
+
+                    }
+
+                ]
+
+            },
+
+
+            tooltip: {
+
+                formatter: function() {
+
+
+                    if (this.point.isTop50) {
+
+                        return (
+
+                            "<b>Top 50 threshold</b><br><br>" +
+
+                            "Approx. wealth of the " +
+
+                            "50th wealthiest Swedish " +
+
+                            "individual:<br>" +
+
+                            "<b>" +
+
+                            formatSEK(this.y) +
+
+                            "</b>"
+
+                        );
+
+                    }
+
 
                     return (
 
-                        "<b>Top 50 wealth threshold</b><br>" +
+                        "<b>" +
 
-                        "Estimated wealth: <b>" +
+                        this.point.percentile +
+
+                        "th percentile</b><br><br>" +
+
+                        "Wealth threshold:<br>" +
+
+                        "<b>" +
 
                         formatSEK(this.y) +
 
@@ -504,59 +674,55 @@ function updateChart() {
 
                 }
 
-
-                return (
-
-                    "<b>" +
-
-                    this.category +
-
-                    " percentile</b><br>" +
-
-                    "Net wealth: <b>" +
-
-                    formatSEK(this.y) +
-
-                    "</b>"
-
-                );
-
-            }
-
-        },
+            },
 
 
-        legend: {
+            legend: {
 
-            enabled: false
+                enabled: false
 
-        },
-
-
-        plotOptions: {
-
-            column: {
-
-                pointPadding: 0.05,
-
-                groupPadding: 0.02,
-
-                borderWidth: 0
-
-            }
-
-        },
+            },
 
 
-        series: [{
+            credits: {
 
-            name: "Net wealth",
+                enabled: false
 
-            data: values
+            },
 
-        }]
 
-    });
+            plotOptions: {
+
+                column: {
+
+                    pointPadding: 0.02,
+
+                    groupPadding: 0.015,
+
+                    borderWidth: 0,
+
+                    minPointLength: 1
+
+                }
+
+            },
+
+
+            series: [
+
+                {
+
+                    name: "Wealth threshold",
+
+                    data: values
+
+                }
+
+            ]
+
+        }
+
+    );
 
 }
 
@@ -566,7 +732,7 @@ function updateChart() {
 // ==========================================================
 
 
-updateChart();
+loadWIDData();
 
 
 </script>
